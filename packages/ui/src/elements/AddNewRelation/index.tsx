@@ -1,5 +1,5 @@
 'use client'
-import type { ClientCollectionConfig } from 'payload'
+import type { ClientCollectionConfig, Operation, TypeWithID } from 'payload'
 
 import { getTranslation } from '@payloadcms/translations'
 import { hasAutosaveEnabled } from 'payload/shared'
@@ -37,8 +37,8 @@ export const AddNewRelation: React.FC<Props> = ({
 
   const relatedToMany = relatedCollections.length > 1
 
-  const [collectionConfig, setCollectionConfig] = useState<ClientCollectionConfig>(() =>
-    !relatedToMany ? relatedCollections[0] : undefined,
+  const [collectionConfig, setCollectionConfig] = useState<ClientCollectionConfig | undefined>(
+    () => (!relatedToMany ? relatedCollections[0] : undefined),
   )
 
   const [popupOpen, setPopupOpen] = useState(false)
@@ -52,7 +52,7 @@ export const AddNewRelation: React.FC<Props> = ({
   )
 
   const onSave: DocumentDrawerContextType['onSave'] = useCallback(
-    ({ doc, operation }) => {
+    ({ doc, operation }: { doc: TypeWithID; operation: Operation }) => {
       // if autosave is enabled, the operation will be 'update'
       if (
         operation === 'create' ||
@@ -73,7 +73,7 @@ export const AddNewRelation: React.FC<Props> = ({
             onChange([
               ...(Array.isArray(value) ? value : []),
               {
-                relationTo: collectionConfig?.slug,
+                relationTo: collectionConfig?.slug!,
                 value: doc.id,
               },
             ])
@@ -91,18 +91,18 @@ export const AddNewRelation: React.FC<Props> = ({
     [collectionConfig, hasMany, onChange, value, relatedCollections],
   )
 
-  const onPopupToggle = useCallback((state) => {
+  const onPopupToggle = useCallback((state: boolean) => {
     setPopupOpen(state)
   }, [])
 
   useEffect(() => {
     if (permissions) {
       if (relatedCollections.length === 1) {
-        setShow(permissions.collections[relatedCollections[0]?.slug]?.create)
+        setShow(permissions?.collections?.[relatedCollections[0]?.slug]?.create ?? false)
       } else {
         setShow(
           relatedCollections.some(
-            (collection) => permissions.collections[collection?.slug]?.create,
+            (collection) => permissions?.collections?.[collection?.slug]?.create,
           ),
         )
       }
@@ -193,7 +193,7 @@ export const AddNewRelation: React.FC<Props> = ({
             render={({ close: closePopup }) => (
               <PopupList.ButtonGroup>
                 {relatedCollections.map((relatedCollection) => {
-                  if (permissions.collections[relatedCollection?.slug].create) {
+                  if (permissions?.collections?.[relatedCollection?.slug]?.create) {
                     return (
                       <PopupList.Button
                         className={`${baseClass}__relation-button--${relatedCollection?.slug}`}
@@ -214,7 +214,7 @@ export const AddNewRelation: React.FC<Props> = ({
             )}
             size="medium"
           />
-          {collectionConfig && permissions.collections[collectionConfig?.slug]?.create && (
+          {collectionConfig && permissions?.collections?.[collectionConfig?.slug]?.create && (
             <DocumentDrawer onSave={onSave} />
           )}
         </Fragment>
