@@ -38,7 +38,7 @@ export type Props = {
   collection?: ClientCollectionConfig
   global?: ClientGlobalConfig
   id?: number | string
-  publishedDocUpdatedAt: string
+  publishedDocUpdatedAt?: string
 }
 
 export const Autosave: React.FC<Props> = ({ id, collection, global: globalDoc }) => {
@@ -77,22 +77,22 @@ export const Autosave: React.FC<Props> = ({ id, collection, global: globalDoc })
 
   const { queueTask } = useQueue()
 
-  const autosaveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const autosaveTimeoutRef = useRef<number | NodeJS.Timeout | null>(null)
 
   const handleAutosave = useEffectEvent(() => {
-    autosaveTimeoutRef.current = undefined
+    autosaveTimeoutRef.current = null
     // We need to log the time in order to figure out if we need to trigger the state off later
-    let startTimestamp = undefined
-    let endTimestamp = undefined
+    let startTimestamp: number | undefined = undefined
+    let endTimestamp: number | undefined = undefined
 
     const hideIndicator = () => {
       // If request was faster than minimum animation time, animate the difference
-      if (endTimestamp - startTimestamp < minimumAnimationTime) {
+      if (endTimestamp! - startTimestamp! < minimumAnimationTime) {
         autosaveTimeoutRef.current = setTimeout(
           () => {
             setSaving(false)
           },
-          minimumAnimationTime - (endTimestamp - startTimestamp),
+          minimumAnimationTime - (endTimestamp! - startTimestamp!),
         )
       } else {
         stopAutoSaveIndicator()
@@ -106,9 +106,9 @@ export const Autosave: React.FC<Props> = ({ id, collection, global: globalDoc })
 
           setSaving(true)
 
-          let url: string
-          let method: string
-          let entitySlug: string
+          let url: string | undefined
+          let method: string | undefined
+          let entitySlug: string | undefined
 
           if (collection && id) {
             entitySlug = collection.slug
@@ -127,7 +127,7 @@ export const Autosave: React.FC<Props> = ({ id, collection, global: globalDoc })
           const skipSubmission = submitted && !valid && validateOnDraft
 
           if (!skipSubmission && modified && url) {
-            const result = await submit<any, OnSaveContext>({
+            const result = await submit<Response, OnSaveContext>({
               acceptValues: {
                 overrideLocalChanges: false,
               },
