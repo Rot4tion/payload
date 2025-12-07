@@ -10,9 +10,9 @@ type Props = {
   readonly children?: React.ReactNode
   readonly className?: string
   readonly disabled?: boolean
-  readonly onClick: (e: React.MouseEvent) => void
+  readonly onClick?: (e: React.PointerEvent) => void
   readonly onKeyDown?: (e: React.KeyboardEvent) => void
-  readonly ref?: React.RefObject<HTMLDivElement>
+  readonly ref?: React.RefObject<HTMLElement | null>
   readonly thresholdPixels?: number
 }
 
@@ -31,11 +31,11 @@ export const DraggableWithClick = ({
   const initialPos = useRef({ x: 0, y: 0 })
   const isDragging = useRef(false)
 
-  const handlePointerDown = (e) => {
+  const handlePointerDown = (e: React.PointerEvent) => {
     initialPos.current = { x: e.clientX, y: e.clientY }
     isDragging.current = false
 
-    const handlePointerMove = (moveEvent) => {
+    const handlePointerMove = (moveEvent: PointerEvent) => {
       const deltaX = Math.abs(moveEvent.clientX - initialPos.current.x)
       const deltaY = Math.abs(moveEvent.clientY - initialPos.current.y)
       if (deltaX > thresholdPixels || deltaY > thresholdPixels) {
@@ -45,7 +45,7 @@ export const DraggableWithClick = ({
           // when the user starts dragging
           // - call the click handler
           // - remove the pointermove listener
-          onClick(moveEvent)
+          onClick?.(moveEvent as unknown as React.PointerEvent)
         }
         window.removeEventListener('pointermove', handlePointerMove)
       }
@@ -56,12 +56,12 @@ export const DraggableWithClick = ({
       window.removeEventListener('pointerup', handlePointerUp)
     }
 
-    const handlePointerUp = (upEvent) => {
+    const handlePointerUp = (upEvent: PointerEvent) => {
       cleanup()
       if (!isDragging.current) {
         // if the user did not drag the element
         // - call the click handler
-        onClick(upEvent)
+        onClick?.(upEvent as unknown as React.PointerEvent)
       }
     }
 
@@ -73,15 +73,15 @@ export const DraggableWithClick = ({
 
   return (
     <Component
+      {...attributes}
       role="button"
       tabIndex={0}
-      {...attributes}
       className={[baseClass, className, disabled ? `${baseClass}--disabled` : '']
         .filter(Boolean)
         .join(' ')}
       onKeyDown={disabled ? undefined : onKeyDown}
       onPointerDown={disabled ? undefined : onClick ? handlePointerDown : undefined}
-      ref={(node) => {
+      ref={(node: HTMLElement | null) => {
         if (disabled) {
           return
         }

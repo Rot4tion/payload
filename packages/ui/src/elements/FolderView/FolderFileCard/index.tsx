@@ -28,7 +28,7 @@ type Props = {
   readonly isFocused?: boolean
   readonly isSelected?: boolean
   readonly itemKey: string
-  readonly onClick?: (e: React.MouseEvent) => void
+  readonly onClick?: (e: React.PointerEvent) => void
   readonly onKeyDown?: (e: React.KeyboardEvent) => void
   readonly PopupActions?: React.ReactNode
   readonly previewUrl?: string
@@ -63,7 +63,7 @@ export function FolderFileCard({
     },
     disabled: disableDrop,
   })
-  const ref = React.useRef(null)
+  const ref = React.useRef<HTMLElement>(null)
 
   React.useEffect(() => {
     const copyOfRef = ref.current
@@ -141,18 +141,18 @@ function AssignedCollections({ folderType }: { folderType: string[] }) {
   const { i18n } = useTranslation()
 
   const collectionsDisplayText = React.useMemo(() => {
-    return folderType.reduce((acc, collection) => {
+    return folderType.reduce((acc: string[], collection) => {
       const collectionConfig = config.collections?.find((c) => c.slug === collection)
       if (collectionConfig) {
         return [...acc, getTranslation(collectionConfig.labels.plural, i18n)]
       }
       return acc
-    }, [])
+    }, [] as string[])
   }, [folderType, config.collections, i18n])
 
   return (
     <p className={`${baseClass}__assigned-collections`}>
-      {collectionsDisplayText.map((label, index) => (
+      {collectionsDisplayText.map((label: string, index: number) => (
         <span key={label}>
           {label}
           {index < folderType.length - 1 ? ', ' : ''}

@@ -17,7 +17,7 @@ type Props = {
   readonly isSelected?: boolean
   readonly isSelecting?: boolean
   readonly itemKey: string
-  readonly onClick?: (e: React.MouseEvent) => void
+  readonly onClick?: (e: React.PointerEvent) => void
   readonly onKeyDown?: (e: React.KeyboardEvent) => void
 }
 export function DraggableTableRow({
@@ -39,7 +39,7 @@ export function DraggableTableRow({
     data: dragData,
     disabled: !isDroppable,
   })
-  const ref = React.useRef(null)
+  const ref = React.useRef<HTMLElement>(null)
 
   React.useEffect(() => {
     const copyOfRef = ref.current
