@@ -53,8 +53,8 @@ export const ListQueryProvider: React.FC<ListQueryProps> = ({
       return searchParams
     } else {
       return {
-        limit: queryFromProps.limit,
-        sort: queryFromProps.sort,
+        limit: queryFromProps?.limit ?? 10,
+        sort: queryFromProps?.sort,
       }
     }
   })
@@ -70,8 +70,8 @@ export const ListQueryProvider: React.FC<ListQueryProps> = ({
 
       const newQuery = mergeQuery(query, incomingQuery, {
         defaults: {
-          limit: queryFromProps.limit,
-          sort: queryFromProps.sort,
+          limit: queryFromProps?.limit ?? 10,
+          sort: queryFromProps?.sort,
         },
       })
 
@@ -100,8 +100,7 @@ export const ListQueryProvider: React.FC<ListQueryProps> = ({
     },
     [
       query,
-      queryFromProps.limit,
-      queryFromProps.sort,
+      queryFromProps,
       modifySearchParams,
       onQueryChange,
       onQueryChangeFromProps,
@@ -174,19 +173,19 @@ export const ListQueryProvider: React.FC<ListQueryProps> = ({
   return (
     <ListQueryContext
       value={{
-        collectionSlug,
+        ...contextRef.current,
+        collectionSlug: collectionSlug!,
         data,
         handlePageChange,
         handlePerPageChange,
         handleSearchChange,
         handleSortChange,
         handleWhereChange,
-        isGroupingBy: Boolean(collectionConfig?.admin?.groupBy && query?.groupBy),
+        isGroupingBy: Boolean((collectionConfig?.admin as any)?.groupBy && query?.groupBy),
         orderableFieldName,
         query,
         refineListData,
         setModified,
-        ...contextRef.current,
       }}
     >
       <ListQueryModifiedContext value={modified}>{children}</ListQueryModifiedContext>
