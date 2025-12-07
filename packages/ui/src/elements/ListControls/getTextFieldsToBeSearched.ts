@@ -8,15 +8,15 @@ export const getTextFieldsToBeSearched = (
   listSearchableFields: string[],
   fields: ClientField[],
   i18n: I18nClient,
-): ClientField[] => {
+): ClientField[] | null => {
   if (listSearchableFields) {
     const flattenedFields = flattenTopLevelFields(fields, {
       i18n,
       moveSubFieldsToTop: true,
-    }) as ClientField[]
+    })
 
     const searchableFieldNames = new Set(listSearchableFields)
-    const matchingFields: typeof flattenedFields = []
+    const matchingFields: ClientField[] = []
 
     for (const field of flattenedFields) {
       if (fieldAffectsData(field) && searchableFieldNames.has(field.name)) {
