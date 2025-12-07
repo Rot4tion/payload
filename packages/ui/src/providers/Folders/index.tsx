@@ -50,7 +50,7 @@ export type FolderContextValue = {
   documents?: FolderOrDocument[]
   dragOverlayItem?: FolderOrDocument | undefined
   focusedRowIndex: number
-  folderCollectionConfig: ClientCollectionConfig
+  folderCollectionConfig: ClientCollectionConfig | null | undefined
   folderCollectionSlug: string
   folderFieldName: string
   folderID?: number | string
@@ -64,7 +64,7 @@ export type FolderContextValue = {
     itemsToMove: FolderOrDocument[]
     toFolderID?: number | string
   }) => Promise<void>
-  onItemClick: (args: { event: React.MouseEvent; index: number; item: FolderOrDocument }) => void
+  onItemClick: (args: { event: React.PointerEvent; index: number; item: FolderOrDocument }) => void
   onItemKeyPress: (args: {
     event: React.KeyboardEvent
     index: number
@@ -74,7 +74,7 @@ export type FolderContextValue = {
   search: string
   selectedFolderCollections?: CollectionSlug[]
   readonly selectedItemKeys: Set<FolderDocumentItemKey>
-  setBreadcrumbs: React.Dispatch<React.SetStateAction<FolderBreadcrumb[]>>
+  setBreadcrumbs: React.Dispatch<React.SetStateAction<FolderBreadcrumb[] | undefined>>
   setFocusedRowIndex: React.Dispatch<React.SetStateAction<number>>
   setIsDragging: React.Dispatch<React.SetStateAction<boolean>>
   sort: FolderSortKeys
@@ -224,7 +224,7 @@ export function FolderProvider({
       (collection) => config.folders && collection.slug === config.folders.slug,
     ),
   )
-  const folderCollectionSlug = folderCollectionConfig.slug
+  const folderCollectionSlug = folderCollectionConfig?.slug || ''
 
   const rawSearchParams = useSearchParams()
   const searchParams = React.useMemo(() => parseSearchParams(rawSearchParams), [rawSearchParams])
@@ -416,7 +416,7 @@ export function FolderProvider({
         return newRangeIndexes
       } else {
         // Extending: union with existing
-        return [...new Set([...existingIndexes, ...newRangeIndexes])]
+        return Array.from(new Set([...existingIndexes, ...newRangeIndexes]))
       }
     },
     [subfolders, documents, selectedItemKeys],
@@ -430,7 +430,7 @@ export function FolderProvider({
           if (indexes.includes(index)) {
             acc.newSelectedItemKeys.add(item.itemKey)
             if (item.relationTo === folderCollectionSlug) {
-              item.value.folderType?.forEach((collectionSlug) => {
+              item.value.folderType?.forEach((collectionSlug: CollectionSlug) => {
                 if (!acc.newSelectedFolderCollections.includes(collectionSlug)) {
                   acc.newSelectedFolderCollections.push(collectionSlug)
                 }
@@ -505,7 +505,7 @@ export function FolderProvider({
         }
         case 'Enter': {
           if (selectedItemKeys.size === 1) {
-            setFocusedRowIndex(undefined)
+            setFocusedRowIndex(-1)
             navigateAfterSelection({
               collectionSlug: currentItem.relationTo,
               docID: extractID(currentItem.value),
@@ -636,7 +636,9 @@ export function FolderProvider({
         // Normal click - select single item
         const now = Date.now()
         doubleClicked =
-          now - lastClickTime.current < 400 && dragOverlayItem?.itemKey === clickedItem.itemKey
+          lastClickTime.current !== null &&
+          now - lastClickTime.current < 400 &&
+          dragOverlayItem?.itemKey === clickedItem.itemKey
         lastClickTime.current = now
         if (!doubleClicked) {
           updateSelections({
@@ -803,12 +805,13 @@ export function FolderProvider({
         if (item.relationTo === folderCollectionSlug) {
           return folderAcceptsItem({
             item,
-            selectedFolderCollections: parentFolderContext.selectedFolderCollections,
+            selectedFolderCollections: parentFolderContext.selectedFolderCollections || [],
           })
         }
         // If the item is not a folder, it is disabled on move
         return true
       }
+      return false
     },
     [
       selectedFolderCollections,
@@ -842,7 +845,7 @@ export function FolderProvider({
                 folderFieldName,
                 isUpload: false,
                 relationTo: folderCollectionSlug,
-                useAsTitle: folderCollectionConfig.admin.useAsTitle,
+                useAsTitle: folderCollectionConfig?.admin?.useAsTitle,
                 value: breadcrumbs[breadcrumbs.length - 1],
               })
             : null,
@@ -863,7 +866,7 @@ export function FolderProvider({
         onItemClick,
         onItemKeyPress,
         refineFolderData,
-        search,
+        search: search || '',
         selectedFolderCollections,
         selectedItemKeys,
         setBreadcrumbs,
