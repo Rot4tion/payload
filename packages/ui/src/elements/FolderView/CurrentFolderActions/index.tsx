@@ -84,7 +84,7 @@ export function CurrentFolderActions({ className }: Props) {
               }}
             >
               {t('general:editLabel', {
-                label: getTranslation(folderCollectionConfig.labels.singular, i18n),
+                label: getTranslation(folderCollectionConfig?.labels?.singular || 'folder', i18n),
               })}
             </PopupList.Button>
             <PopupList.Button
@@ -148,7 +148,7 @@ export function CurrentFolderActions({ className }: Props) {
             i18nKey="general:aboutToDelete"
             t={t as any}
             variables={{
-              label: getTranslation(folderCollectionConfig.labels.singular, i18n),
+              label: getTranslation(folderCollectionConfig?.labels?.singular || 'folder', i18n),
               title: currentFolder.value._folderOrDocumentTitle,
             }}
           />
