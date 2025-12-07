@@ -38,7 +38,7 @@ export const FolderTableCellClient = ({
   const hasLoadedFolderName = React.useRef(false)
 
   const onConfirm = React.useCallback(
-    async ({ id, name }) => {
+    async ({ id, name }: { id: number | string; name: string }) => {
       try {
         await fetch(`${config.routes.api}/${collectionSlug}/${docID}`, {
           body: JSON.stringify({

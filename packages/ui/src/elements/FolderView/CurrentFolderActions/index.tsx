@@ -54,7 +54,7 @@ export function CurrentFolderActions({ className }: Props) {
       method: 'DELETE',
     })
     startRouteTransition(() => {
-      router.push(getFolderRoute(breadcrumbs[breadcrumbs.length - 2]?.id || null))
+      router.push(getFolderRoute(breadcrumbs?.[breadcrumbs.length - 2]?.id || null))
     })
   }, [
     breadcrumbs,
@@ -116,7 +116,7 @@ export function CurrentFolderActions({ className }: Props) {
         onConfirm={async ({ id, name }) => {
           await moveToFolder({
             itemsToMove: [currentFolder],
-            toFolderID: id,
+            toFolderID: id ?? undefined,
           })
           if (id) {
             // moved to folder
@@ -146,7 +146,7 @@ export function CurrentFolderActions({ className }: Props) {
               '1': ({ children }) => <strong>{children}</strong>,
             }}
             i18nKey="general:aboutToDelete"
-            t={t}
+            t={t as any}
             variables={{
               label: getTranslation(folderCollectionConfig.labels.singular, i18n),
               title: currentFolder.value._folderOrDocumentTitle,
