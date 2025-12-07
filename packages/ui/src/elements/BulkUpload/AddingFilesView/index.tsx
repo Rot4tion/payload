@@ -47,17 +47,16 @@ export function AddingFilesView() {
       <div className={`${baseClass}__editView`}>
         <DrawerHeader
           onClose={() => openModal(discardBulkUploadModalSlug)}
-          title={getTranslation(collectionConfig.labels.singular, i18n)}
+          title={collectionConfig ? getTranslation(collectionConfig.labels.singular, i18n) : ''}
         />
         {activeForm ? (
           <DocumentInfoProvider
             collectionSlug={collectionSlug}
-            currentEditor={user}
+            currentEditor={user!}
             docPermissions={docPermissions}
             hasPublishedDoc={false}
             hasPublishPermission={hasPublishPermission}
             hasSavePermission={hasSavePermission}
-            id={null}
             initialData={reduceFieldsToValues(activeForm.formState, true)}
             initialState={activeForm.formState}
             isLocked={false}
@@ -68,7 +67,7 @@ export function AddingFilesView() {
             Upload={documentSlots.Upload}
             versionCount={0}
           >
-            <ActionsBar collectionConfig={collectionConfig} />
+            {collectionConfig && <ActionsBar collectionConfig={collectionConfig} />}
             <EditForm
               resetUploadEdits={resetUploadEdits}
               submitted={hasSubmitted}

@@ -18,7 +18,7 @@ type Props = {
 export function AddFilesView({ acceptMimeTypes, onCancel, onDrop }: Props) {
   const { t } = useTranslation()
 
-  const inputRef = React.useRef(null)
+  const inputRef = React.useRef<HTMLInputElement>(null)
 
   return (
     <div className={baseClass}>
