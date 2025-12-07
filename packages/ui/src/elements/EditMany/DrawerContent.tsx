@@ -145,7 +145,6 @@ type EditManyDrawerContentProps = {
 export const EditManyDrawerContent: React.FC<EditManyDrawerContentProps> = (props) => {
   const {
     collection,
-    collection: { fields, labels: { plural, singular } } = {},
     count,
     drawerSlug,
     ids,
@@ -179,6 +178,10 @@ export const EditManyDrawerContent: React.FC<EditManyDrawerContentProps> = (prop
   const { clearRouteCache } = useRouteCache()
   const collectionPermissions = permissions?.collections?.[collection.slug]
   const searchParams = useSearchParams()
+
+  const plural = collection.labels?.plural
+  const singular = collection.labels?.singular
+  const fields = collection.fields
 
   const select = useMemo<SelectType>(() => {
     return unflatten(
@@ -317,9 +320,8 @@ export const EditManyDrawerContent: React.FC<EditManyDrawerContentProps> = (prop
   return (
     <DocumentInfoProvider
       collectionSlug={collection.slug}
-      currentEditor={user}
+      currentEditor={user!}
       hasPublishedDoc={false}
-      id={null}
       initialData={{}}
       isLocked={false}
       lastUpdateTime={0}
@@ -355,7 +357,7 @@ export const EditManyDrawerContent: React.FC<EditManyDrawerContentProps> = (prop
             <FieldSelect
               fields={fields}
               onChange={onFieldSelect}
-              permissions={collectionPermissions.fields}
+              permissions={collectionPermissions?.fields}
             />
             {selectedFields.length === 0 ? null : (
               <div className="render-fields">
