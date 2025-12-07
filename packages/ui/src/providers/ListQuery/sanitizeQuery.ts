@@ -11,7 +11,7 @@ export const sanitizeQuery = (toSanitize: ListQuery): ListQuery => {
   Object.entries(sanitized).forEach(([key, value]) => {
     if (
       key === 'columns' &&
-      (value === '[]' || (Array.isArray(sanitized[key]) && sanitized[key].length === 0))
+      (value === '[]' || (Array.isArray(sanitized[key]) && sanitized[key]?.length === 0))
     ) {
       delete sanitized[key]
     }
