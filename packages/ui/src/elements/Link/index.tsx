@@ -8,7 +8,9 @@ import { formatUrl } from './formatUrl.js'
 
 const NextLink = (
   'default' in NextLinkImport ? NextLinkImport.default : NextLinkImport
-) as React.ComponentType<React.PropsWithChildren<LinkProps>>
+) as React.ComponentType<
+  React.PropsWithChildren<LinkProps & React.AnchorHTMLAttributes<HTMLAnchorElement>>
+>
 
 // Copied from  https://github.com/vercel/next.js/blob/canary/packages/next/src/client/link.tsx#L180-L191
 function isModifiedEvent(event: React.MouseEvent): boolean {
