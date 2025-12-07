@@ -18,6 +18,11 @@ import './index.scss'
 
 export const documentDrawerBaseClass = 'doc-drawer'
 
+// Extract component types from UseDocumentDrawer to avoid duplication
+type UseDocumentDrawerReturn = ReturnType<UseDocumentDrawer>
+type MemoizedDrawerProps = React.ComponentProps<UseDocumentDrawerReturn[0]>
+type MemoizedDrawerTogglerProps = React.ComponentProps<UseDocumentDrawerReturn[1]>
+
 const formatDocumentDrawerSlug = ({
   id,
   collectionSlug,
@@ -26,7 +31,7 @@ const formatDocumentDrawerSlug = ({
 }: {
   collectionSlug: string
   depth: number
-  id?: number | string
+  id?: number | string | null
   uuid: string
 }) => `doc-drawer_${collectionSlug}_${depth}${id ? `_${id}` : ''}_${uuid}`
 
@@ -121,7 +126,7 @@ export const useDocumentDrawer: UseDocumentDrawer = ({
     openModal(drawerSlug)
   }, [openModal, drawerSlug])
 
-  const MemoizedDrawer = useMemo<React.FC<DocumentDrawerProps>>(() => {
+  const MemoizedDrawer = useMemo<React.FC<MemoizedDrawerProps>>(() => {
     return (props) => (
       <DocumentDrawer
         {...props}
@@ -134,7 +139,7 @@ export const useDocumentDrawer: UseDocumentDrawer = ({
     )
   }, [id, drawerSlug, collectionSlug, overrideEntityVisibility])
 
-  const MemoizedDrawerToggler = useMemo<React.FC<DocumentTogglerProps>>(() => {
+  const MemoizedDrawerToggler = useMemo<React.FC<MemoizedDrawerTogglerProps>>(() => {
     return (props) => (
       <DocumentDrawerToggler
         {...props}

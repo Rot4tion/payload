@@ -12,7 +12,7 @@ export type DocumentDrawerProps = {
    */
   readonly collectionSlug: string
   readonly disableActions?: boolean
-  readonly drawerSlug?: string
+  readonly drawerSlug: string
   /**
    * The ID of the document to be edited.
    * When provided, will be fetched and displayed in the drawer.
@@ -37,7 +37,7 @@ export type DocumentTogglerProps = {
   readonly className?: string
   readonly collectionSlug: string
   readonly disabled?: boolean
-  readonly drawerSlug?: string
+  readonly drawerSlug: string
   readonly onClick?: () => void
   readonly operation: Operation
 } & Readonly<HTMLAttributes<HTMLButtonElement>>
@@ -58,13 +58,13 @@ export type UseDocumentDrawer = (
   React.FC<
     {
       children?: React.ReactNode
-    } & Omit<DocumentDrawerProps, 'collectionSlug' | 'operation'>
+    } & Omit<DocumentDrawerProps, 'collectionSlug' | 'drawerSlug' | 'operation'>
   >,
   // toggler
   React.FC<
     {
       children?: React.ReactNode
-    } & Omit<DocumentTogglerProps, 'collectionSlug' | 'operation'>
+    } & Omit<DocumentTogglerProps, 'collectionSlug' | 'drawerSlug' | 'operation'>
   >,
   // context
   UseDocumentDrawerContext,

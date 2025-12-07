@@ -29,7 +29,7 @@ export const DrawerToggler: React.FC<TogglerProps> = ({
   const { openModal } = useModal()
 
   const handleClick = useCallback(
-    (e) => {
+    (e: React.MouseEvent<HTMLButtonElement>) => {
       openModal(slug)
       if (typeof onClick === 'function') {
         onClick(e)
@@ -105,7 +105,10 @@ export const Drawer: React.FC<Props> = ({
               {Header}
               {Header === undefined && (
                 <div className={`${baseClass}__header`}>
-                  <h2 className={`${baseClass}__header__title`} title={hoverTitle ? title : null}>
+                  <h2
+                    className={`${baseClass}__header__title`}
+                    title={hoverTitle ? title : undefined}
+                  >
                     {title}
                   </h2>
                   {/* TODO: the `button` HTML element breaks CSS transitions on the drawer for some reason...
