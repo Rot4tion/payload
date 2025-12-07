@@ -10,7 +10,7 @@ import type { SizeReducerAction } from './sizeReducer.js'
 
 export interface LivePreviewContextType {
   appIsReady: boolean
-  breakpoint: LivePreviewConfig['breakpoints'][number]['name']
+  breakpoint?: NonNullable<LivePreviewConfig['breakpoints']>[number]['name']
   breakpoints: LivePreviewConfig['breakpoints']
   iframeRef: React.RefObject<HTMLIFrameElement | null>
   isLivePreviewEnabled: boolean
@@ -33,7 +33,9 @@ export interface LivePreviewContextType {
   previewURL?: string
   previewWindowType: 'iframe' | 'popup'
   setAppIsReady: (appIsReady: boolean) => void
-  setBreakpoint: (breakpoint: LivePreviewConfig['breakpoints'][number]['name']) => void
+  setBreakpoint: (
+    breakpoint?: NonNullable<LivePreviewConfig['breakpoints']>[number]['name'],
+  ) => void
   setHeight: (height: number) => void
   setIsLivePreviewing: (isLivePreviewing: boolean) => void
   setLoadedURL: (loadedURL: string) => void
@@ -71,11 +73,12 @@ export const LivePreviewContext = createContext<LivePreviewContextType>({
   appIsReady: false,
   breakpoint: undefined,
   breakpoints: undefined,
+  // @ts-ignore keep value just fix ts
   iframeRef: undefined,
-  isLivePreviewEnabled: undefined,
+  isLivePreviewEnabled: false,
   isLivePreviewing: false,
   isPopupOpen: false,
-  isPreviewEnabled: undefined,
+  isPreviewEnabled: false,
   measuredDeviceSize: {
     height: 0,
     width: 0,

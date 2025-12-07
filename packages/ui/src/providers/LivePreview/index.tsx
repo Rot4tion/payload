@@ -1,6 +1,7 @@
 'use client'
 import type { CollectionPreferences, LivePreviewConfig, LivePreviewURLType } from 'payload'
 
+import type { DragEndEvent } from '@dnd-kit/core'
 import { DndContext } from '@dnd-kit/core'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -61,7 +62,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
   )
 
   const [url, setURL] = useState<string>('')
-  const [previewURL, setPreviewURL] = useState<string>(previewURLFromProps)
+  const [previewURL, setPreviewURL] = useState<string | undefined>(previewURLFromProps)
 
   const { isPopupOpen, openPopupWindow, popupRef } = usePopupWindow({
     eventType: 'payload-live-preview',
@@ -93,7 +94,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
   })
 
   const [breakpoint, setBreakpoint] =
-    React.useState<LivePreviewConfig['breakpoints'][0]['name']>('responsive')
+    React.useState<NonNullable<LivePreviewConfig['breakpoints']>[0]['name']>('responsive')
 
   /**
    * A "middleware" callback fn that does some additional work before `setURL`.
@@ -115,7 +116,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
 
       if (incomingURL !== url) {
         setAppIsReady(false)
-        setURL(incomingURL)
+        setURL(incomingURL || '')
       }
     },
     [url],
@@ -131,7 +132,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
   }, [urlFromProps])
 
   // The toolbar needs to freely drag and drop around the page
-  const handleDragEnd = (ev) => {
+  const handleDragEnd = (ev: DragEndEvent) => {
     // only update position if the toolbar is completely within the preview area
     // otherwise reset it back to the previous position
     // TODO: reset to the nearest edge of the preview area
@@ -148,14 +149,14 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
   }
 
   const setWidth = useCallback(
-    (width) => {
+    (width: number) => {
       setSize({ type: 'width', value: width })
     },
     [setSize],
   )
 
   const setHeight = useCallback(
-    (height) => {
+    (height: number) => {
       setSize({ type: 'height', value: height })
     },
     [setSize],
@@ -255,10 +256,10 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
         breakpoint,
         breakpoints,
         iframeRef,
-        isLivePreviewEnabled,
+        isLivePreviewEnabled: isLivePreviewEnabled ?? false,
         isLivePreviewing,
         isPopupOpen,
-        isPreviewEnabled,
+        isPreviewEnabled: isPreviewEnabled ?? false,
         listeningForMessages,
         loadedURL,
         measuredDeviceSize,
@@ -267,7 +268,8 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
         previewURL,
         previewWindowType,
         setAppIsReady,
-        setBreakpoint,
+        setBreakpoint: (value?: NonNullable<LivePreviewConfig['breakpoints']>[0]['name']) =>
+          setBreakpoint(value || 'responsive'),
         setHeight,
         setIsLivePreviewing,
         setLoadedURL,
