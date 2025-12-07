@@ -93,7 +93,7 @@ export const ListQueryProvider: React.FC<ListQueryProps> = ({
         typeof onQueryChangeFromProps === 'function'
       ) {
         const onChangeFn = onQueryChange || onQueryChangeFromProps
-        onChangeFn(newQuery)
+        onChangeFn!(newQuery)
       }
 
       setQuery(newQuery)
